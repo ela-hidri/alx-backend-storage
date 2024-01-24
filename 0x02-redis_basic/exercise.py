@@ -8,14 +8,13 @@ import uuid
 from functools import wraps
 
 
-def count_calls(fn: Callable) -> Callable:
+def count_calls(method: Callable) -> Callable:
     """count how many function is called"""
-    key = fn.__qualname__
-    @wraps(fn)
+    @wraps(method)
     def wrapper(self: Any, *args, **kwds) -> str:
         """ count """
-        self._redis.incr(key)
-        return fn(self, *args, **kwds)
+        self._redis.incr(method.__qualname__)
+        return method(self, *args, **kwds)
     
     return wrapper
 
