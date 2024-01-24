@@ -32,7 +32,7 @@ def call_history(method: Callable) -> Callable:
 
     return wrapper
 
-def replay(method):
+def replay(method: Callable) -> None:
     """ display the history of particular method"""
     redis = redis.Redis()
     calls = redis.get(method.__qualname__).decode('utf-8')
