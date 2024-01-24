@@ -2,9 +2,22 @@
 """
 redis set up
 """
-from typing import Callable, Optional, Union, Any
+from typing import Any, Callable, Optional, Union
 import redis
 import uuid
+from functools import wraps
+
+
+def count_calls(fn: Callable) -> Callable:
+    """count how many function is called"""
+    key = fn.__qualname__
+    @wraps(fn)
+    def wrapper(self: Any, *args, **kwds) -> str:
+        """ count """
+        self._redis.incr(key)
+        return fn(self, *args, **kwds)
+    
+    return wrapper
 
 
 class Cache:
@@ -19,6 +32,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         generate a random key store the input data in Redis
