@@ -42,10 +42,14 @@ class Cache:
             return fn(data)
         return data
 
-    def get_str(data: bytes) -> str:
-        """convert to str"""
+    def get_str(self, data: bytes) -> str:
+        """
+        convert to str
+        """
         return data.decode('utf-8')
 
-    def get_int(data: bytes) -> int:
-        """ convert to int"""
+    def get_int(self, data: bytes) -> int:
+        """
+        convert to int
+        """
         return int(data)
