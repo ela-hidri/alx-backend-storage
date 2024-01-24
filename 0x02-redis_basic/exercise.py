@@ -15,8 +15,9 @@ def count_calls(method: Callable) -> Callable:
         """ count """
         self._redis.incr(method.__qualname__)
         return method(self, *args, **kwds)
-    
+
     return wrapper
+
 
 def call_history(method: Callable) -> Callable:
     """
@@ -32,17 +33,21 @@ def call_history(method: Callable) -> Callable:
 
     return wrapper
 
+
 def replay(method: Callable) -> None:
     """ display the history of particular method"""
-    redis = redis.Redis()
-    calls = redis.get(method.__qualname__).decode('utf-8')
-    inputs = [input.decode('utf-8') for input in
-              redis.lrange(f'{method.__qualname__}:inputs', 0, -1)]
-    outputs = [output.decode('utf-8') for output in
-               redis.lrange(f'{method.__qualname__}:outputs', 0, -1)]
-    print(f'{method.__qualname__} was called {calls} times:')
-    for input, output in zip(inputs, outputs):
-        print(f'{method.__qualname__}(*{input}) -> {output}')
+    key = method.__qualname__
+    inputs = key + ":inputs"
+    outputs = key + ":outputs"
+    redis = method.__self__._redis
+    count = redis.get(key).decode("utf-8")
+    print("{} was called {} times:".format(key, count))
+    inputList = redis.lrange(inputs, 0, -1)
+    outputList = redis.lrange(outputs, 0, -1)
+    redis_zipped = list(zip(inputList, outputList))
+    for a, b in redis_zipped:
+        attr, data = a.decode("utf-8"), b.decode("utf-8")
+        print("{}(*{}) -> {}".format(key, attr, data))
 
 
 class Cache:
