@@ -32,7 +32,7 @@ class Cache:
         Reading from Redis and recovering original type
         """
         data = self._redis.get(Key)
-        if data is None:
+        if not data:
             return
         if fn is str:
             return self.get_str(data)
