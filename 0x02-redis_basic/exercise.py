@@ -2,7 +2,7 @@
 """
 redis set up
 """
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, Union, Any
 import redis
 import uuid
 
@@ -27,7 +27,7 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, Key: str, fn: Optional[Callable] = None):
+    def get(self, Key: str, fn: Optional[Callable] = None) -> Any:
         """
         Reading from Redis and recovering original type
         """
@@ -38,13 +38,13 @@ class Cache:
             return self.get_str(data)
         if fn is int:
             return self.get_int(data)
-        if fn is Callable:
+        if callable(fn):
             return fn(data)
         return data
 
     def get_str(data: bytes) -> str:
         """convert to str"""
-        return data.decode('UTF-8')
+        return data.decode('utf-8')
 
     def get_int(data: bytes) -> int:
         """ convert to int"""
